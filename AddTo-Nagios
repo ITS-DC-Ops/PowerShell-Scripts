@@ -1,5 +1,19 @@
 $computerName = Read-Host "Enter Hostname"
 
+#Error Validation 
+Try {$DNSLookup = [Net.DNS]::GetHostEntry("$computerName")} 
+   Catch [System.Management.Automation.MethodInvocationException] {
+    $ErrorMessage = $_.Exception.Message
+    $FailedItem = $_.Exception.ItemName
+    Return $ErrorMessage
+}
+Catch {
+  $ErrorMessage = $_.Exception.Message
+  $FailedItem = $_.Exception.ItemName
+  Return $ErrorMessage
+}
+
+if($DNSLookup) { 
 #DNS Lookup for entered computer
 
 $DNSLookup = [Net.DNS]::GetHostEntry($computerName)
@@ -51,3 +65,4 @@ $postParams = @{
 #Write-host $postParams.ToString()
 $response = (Invoke-WebRequest -Uri $Uri  -Method 'POST' -Body $postParams).ToString()
 Write-Host $response
+}
