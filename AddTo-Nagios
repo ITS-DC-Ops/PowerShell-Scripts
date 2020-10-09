@@ -1,0 +1,53 @@
+$computerName = Read-Host "Enter Hostname"
+
+#DNS Lookup for entered computer
+
+$DNSLookup = [Net.DNS]::GetHostEntry($computerName)
+
+#hostname of computer
+
+$address = $DNSLookup.AddressList[0].IPAddressToString
+
+$check_command = 'check_ping\!3000,80%\!5000,100%'
+
+$max_check_attempts = '2'
+
+$contacts = 'nagiosadmin'
+
+$notification_interval = '5'
+
+$notification_period= '24x7'
+
+$applyconfig= '1'
+
+$check_period= '24x7'
+
+$Uri = 'https://<nagioshost>/nagiosxi/api/v1/config/host?apikey=l9dtails9n08nns4daf7rndrjup8paicgv9pfrlljjqa9mbjuppne6g2499qgr60&pretty=1'
+
+$postParams = @{
+
+                host_name=$computerName
+
+                address=$address
+
+                check_command = 'check_ping\!3000,80%\!5000,100%'
+
+                max_check_attempts = $max_check_attempts
+
+                contacts = $contacts
+
+                notification_interval = $notification_interval
+
+                notification_period = $notification_period
+
+                applyconfig = $applyconfig
+
+                check_period = $check_period
+
+}
+
+
+
+#Write-host $postParams.ToString()
+$response = (Invoke-WebRequest -Uri $Uri  -Method 'POST' -Body $postParams).ToString()
+Write-Host $response
